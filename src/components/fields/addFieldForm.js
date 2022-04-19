@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 function AddFieldForm(props) {
   const callback = props.callback;
   const setField = props.setField;
-
+  const title = props.title;
   const copyField = (field) => {
     return {
       id: field.id,
-      isActive: field.isActive,
+      active: field.active,
       label: field.label,
       required: field.required,
       type: field.type,
@@ -25,17 +25,16 @@ function AddFieldForm(props) {
   };
   const handleRequiredChange = (e) => {
     const field = copyField(props.field);
-    field.required = e.target.value;
+    field.required = !field.required;
     setField(field);
   };
-  const handleIsActiveChange = (e) => {
+  const handleActiveChange = (e) => {
     const field = copyField(props.field);
-    field.isActive = e.target.value;
+    field.active = !field.active;
     setField(field);
   };
   const handleOptionsChanged = (e) => {
     const field = copyField(props.field);
-    console.log(e.target.value);
     field.options = e.target.value;
     setField(field);
   };
@@ -54,7 +53,7 @@ function AddFieldForm(props) {
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">
-              Заголовок модального окна
+              {title}
             </h5>
             <button
               type="button"
@@ -145,7 +144,7 @@ function AddFieldForm(props) {
                   <div class="col">
                     <input
                       checked={props.field.required}
-                      onChange={handleRequiredChange}
+                      onClick={handleRequiredChange}
                       type="checkbox"
                       id="requiredCheckbox"
                       class="form-check-input"
@@ -160,8 +159,8 @@ function AddFieldForm(props) {
 
                   <div class="col">
                     <input
-                      checked={props.field.isActive}
-                      onChange={handleIsActiveChange}
+                      checked={props.field.active}
+                      onClick={handleActiveChange}
                       type="checkbox"
                       id="isActiveCheckbox"
                       class="form-check-input"

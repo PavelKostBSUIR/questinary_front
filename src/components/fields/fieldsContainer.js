@@ -3,38 +3,35 @@ import AddFieldForm from "./addFieldForm";
 import DeleteFieldForm from "./deleteFieldForm";
 import FieldTable from "./FieldTable";
 import Pagination from "../Pagination";
-function FieldsContainer() {
+function FieldsContainer(props) {
+  const accessToken = props.accessToken;
   const [pageLoaded, SetPageLoaded] = useState(false);
-  const [fieldsPage, setFieldsPage] = useState({
-    content: [],
-    pageable: {
-      pageNumber: 0,
-    },
-    totalPages: 0,
-  });
+  const [fieldsPage, setFieldsPage] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
   const [field, setField] = useState({});
   const maxPages = 5;
   const [size, setSize] = useState(5);
   const setDefField = () => {
-    console.log("someone chanched");
     setField({
       id: "",
-      isActive: false,
+      active: false,
       label: "",
       required: false,
       type: "SINGLE_LINE_TEXT",
       options: [],
     });
   };
-
+  useEffect(() => {
+    fieldsPage.content ? setIsLoaded(true) : setIsLoaded(false);
+  }, [fieldsPage]);
   useEffect(() => fetchGetFieldsPage(0), [size]);
   const fetchGetFieldsPage = (page) => {
     if (size !== "") {
-      console.log("fetching");
       const params = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
         },
       };
       fetch(
@@ -45,7 +42,6 @@ function FieldsContainer() {
         .then((data) => {
           setFieldsPage(data);
           SetPageLoaded(true);
-          console.log(data.totalPages);
         });
     }
   };
@@ -56,42 +52,40 @@ function FieldsContainer() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify(field),
     };
     fetch("http://localhost:8100/field", params).then((res) => {
-      console.log(res.status);
       fetchGetFieldsPage(0);
     });
     //todo fetchGetFieldsAfterAddIfOk
   };
 
   const fetchDeleteField = (field) => {
-    console.log("deelte field" + JSON.stringify(field));
     const params = {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
       },
     };
     fetch("http://localhost:8100/field/" + field.id, params).then((res) => {
-      console.log(res.status);
       fetchGetFieldsPage(0);
     });
     //todo fetchGetFieldsAfterAddIfOk
   };
 
   const fetchUpdField = (field) => {
-    console.log("UpdatedField" + JSON.stringify(field));
     const params = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify(field),
     };
     fetch("http://localhost:8100/field/" + field.id, params).then((res) => {
-      console.log(res.status);
       //todo maybe fetch 0 page
       fetchGetFieldsPage(fieldsPage.pageable.pageNumber);
     });
@@ -108,54 +102,58 @@ function FieldsContainer() {
     <div>
       {pageLoaded ? (
         <div>
-          <FieldTable fields={fieldsPage.content} setField={setNewField} />
-          <Pagination
-            currentPage={fieldsPage.pageable.pageNumber}
-            totalPages={fieldsPage.totalPages}
-            maxPages={maxPages}
-            callback={fetchGetFieldsPage}
-          />
-          <input
-            value={size}
-            onChange={(e) => {
-              setSize(e.target.value);
-            }}
-          />
-          {/*
-      <AddFieldForm
-        ident="exampleModal"
-        field={field}
-        setField={setField}
-        callback={fetchAddField}
-      />
-      <AddFieldForm
-        ident="exampleModal_2"
-        field={field}
-        setField={setField}
-        callback={fetchUpdField}
-      />
-      <DeleteFieldForm
-        ident="exampleModal_3"
-        field={field}
-        setField={setField}
-        callback={fetchDeleteField}
-      />
-          */}
-          <div />
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal"
-            onClick={setDefField}
-          >
-            Добавить поле
-          </button>
+          {isLoaded ? (
+            <div>
+              <div class="row">
+                <div class="col">
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    onClick={setDefField}
+                  >
+                    Добавить поле
+                  </button>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="col">
+                  <FieldTable
+                    fields={fieldsPage.content}
+                    setField={setNewField}
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <Pagination
+                    currentPage={fieldsPage.pageable.pageNumber}
+                    totalPages={fieldsPage.totalPages}
+                    maxPages={maxPages}
+                    callback={fetchGetFieldsPage}
+                  />
+                </div>
+                <div class="col-3">
+                  <input
+                    value={size}
+                    onChange={(e) => {
+                      setSize(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>Loading filedsPage...</div>
+          )}
+
           <AddFieldForm
             ident="exampleModal"
             field={field}
             setField={setField}
             callback={fetchAddField}
+            title="Добавить новое поле"
           />
 
           <AddFieldForm
@@ -163,6 +161,7 @@ function FieldsContainer() {
             field={field}
             setField={setField}
             callback={fetchUpdField}
+            title="Редактировать поле"
           />
           <DeleteFieldForm
             ident="exampleModal_3"

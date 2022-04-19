@@ -14,10 +14,8 @@ function Pagination(props) {
   };
   const maxPages = chooseMax(totalPages, propMaxPage);
   const range = (from, to, step = 1) => {
-    console.log("from:" + from + " to:" + to);
     const range = [];
     let i = from;
-    //console.log("i:" + i);
     while (i <= to) {
       range.push(i);
       i += step;
@@ -26,13 +24,11 @@ function Pagination(props) {
     return range;
   };
   useEffect(() => {
-    console.log("changed");
     setRangeArray(range(currentPage, currentPage + maxPages - 1));
   }, [totalPages]);
   const [rangeArr, setRangeArray] = useState([]);
   const loadNewPage = (e) => {
     const i = parseInt(e.target.name, 10);
-    console.log("lol_3")
     callback(i);
   };
   const loadNextPage = () => {
@@ -45,7 +41,6 @@ function Pagination(props) {
       setRangeArray(arr);
     }
     if (currentPage !== totalPages - 1) {
-      console.log("lol_4")
       callback(currentPage + 1);
     }
   };
@@ -56,7 +51,6 @@ function Pagination(props) {
       setRangeArray(arr);
     }
     if (currentPage !== 0) {
-      console.log("lol_5")
       callback(currentPage - 1);
     }
   };

@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import CheckBoxGroup from "./checkBoxGroup";
 import RadioButtonGroup from "./radioButtonGroup";
 import ComboBox from "./comboBox";
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 //todo active and required check
-function AddFieldForm(props) {
+function AnswerForm(props) {
   const [question, setQuestion] = useState([]);
-  const id = props.id;
   const [answer, setAnswer] = useState({});
+  const { id } = useParams();
   const initAnswer = (question) => {
     const defAnswer = question.map((field) => {
-      return { fieldId: field.id, options: [] };
+      return { fieldId: field.id, options: [""] };
     });
-    console.log(defAnswer);
     setAnswer(defAnswer);
   };
   useEffect(() => {
@@ -21,7 +21,7 @@ function AddFieldForm(props) {
         "Content-Type": "application/json",
       },
     };
-    fetch("http://localhost:8100/answer/question/1", params)
+    fetch("http://localhost:8100/answer/question/" + id, params)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -29,7 +29,7 @@ function AddFieldForm(props) {
         setQuestion([...data]);
       });
     //todo fetch question
-  }, []);
+  }, [id]);
 
   const setFieldOption = (options, id) => {
     const newAnswer = answer.map((field) => {
@@ -37,7 +37,6 @@ function AddFieldForm(props) {
         ? { fieldId: field.fieldId, options: options }
         : field;
     });
-    console.log(newAnswer);
     setAnswer(newAnswer);
   };
   const getComponent = (field, content) => {
@@ -61,10 +60,8 @@ function AddFieldForm(props) {
       },
       body: JSON.stringify({ fieldAnswers: answer }),
     };
-    //todo remove
-    const id = 1;
-    fetch("http://localhost:8100/answer/add_answer/" + id, params).then((res) =>
-      console.log(res)
+    fetch("http://localhost:8100/answer/add_answer/" + id, params).then(
+      (res) => undefined
     );
   };
   return (
@@ -82,7 +79,11 @@ function AddFieldForm(props) {
                   type="text"
                   class="form-control"
                   id={field.id}
-                  value={answer[field.id - 1].options[0]}
+                  value={
+                    answer.find(
+                      (fieldAnswer) => fieldAnswer.fieldId === field.id
+                    ).options[0]
+                  }
                   onChange={setOptionsSingle}
                 />
               );
@@ -96,7 +97,11 @@ function AddFieldForm(props) {
                   type="text"
                   class="form-control"
                   id={field.id}
-                  value={answer[field.id - 1].options[0]}
+                  value={
+                    answer.find(
+                      (fieldAnswer) => fieldAnswer.fieldId === field.id
+                    ).options[0]
+                  }
                   onChange={setOptionsMulti}
                 />
               );
@@ -137,7 +142,11 @@ function AddFieldForm(props) {
                   type="date"
                   class="form-control"
                   id={field.id}
-                  value={answer[field.id - 1].options[0]}
+                  value={
+                    answer.find(
+                      (fieldAnswer) => fieldAnswer.fieldId === field.id
+                    ).options[0]
+                  }
                   onChange={setOptionsDate}
                 />
               );
@@ -146,11 +155,6 @@ function AddFieldForm(props) {
           }
         })}
         <div class="row">
-          <div class="col">
-            <label for="save" class="form-label">
-              Email address
-            </label>
-          </div>
           <div class="col">
             <button
               type="button"
@@ -166,4 +170,4 @@ function AddFieldForm(props) {
     </form>
   );
 }
-export default AddFieldForm;
+export default AnswerForm;

@@ -24,29 +24,31 @@ const FieldTable = (props) => {
                 <td>{String(field.required)}</td>
                 <td>{String(field.active)}</td>
                 <td>
-                  <div class="col">
-                    <button
-                      id={field.id}
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal_2"
-                      onClick={props.setField}
-                    >
-                      Редактировать
-                    </button>
-                  </div>
-                  <div class="col">
-                    <button
-                      id={field.id}
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal_3"
-                      onClick={props.setField}
-                    >
-                      Удалить
-                    </button>
+                  <div class="row">
+                    <div class="col-md-auto">
+                      <button
+                        id={field.id}
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal_2"
+                        onClick={props.setField}
+                      >
+                        Редактировать
+                      </button>
+                    </div>
+                    <div class="col-md-auto">
+                      <button
+                        id={field.id}
+                        type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal_3"
+                        onClick={props.setField}
+                      >
+                        Удалить
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
